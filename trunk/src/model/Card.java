@@ -2,8 +2,8 @@ package model;
 
 public class Card {
 	
-	private int rank;
-	private String suit;
+	private final int rank;
+	private final String suit;
 	
 	public Card(int rank, String suit) {
 		this.rank = rank;

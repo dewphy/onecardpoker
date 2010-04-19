@@ -14,6 +14,10 @@ public class Player {
 		cards = new Card[nbCards];
 	}
 	
+	public boolean hasMoney() {
+		return money > 0;
+	}
+	
 	public int getNbCards() {
 		return nbCards;
 	}
