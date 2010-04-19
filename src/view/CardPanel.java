@@ -5,8 +5,13 @@ import javax.swing.JPanel;
 
 public class CardPanel extends JPanel {
 	
+	CardPanel() {
+		super();
+		add(new JLabel(new CardImage().getImage()));
+	}
+	
 	CardPanel(int rank, String suit) {
 		super();
-		add(new JLabel(CardImage.getImage(rank, suit)));
+		add(new JLabel(new CardImage().getImage(rank, suit)));
 	}
 }

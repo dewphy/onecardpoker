@@ -11,7 +11,7 @@ public class ControllerManager implements AITurn {
 	private EndOfGameManager endOfGameManager;
 	
 	public ControllerManager(ModelManager modelManager){
-		modelManager = modelManager;
+		this.modelManager = modelManager;
 		
 		myai1 = new AI(this, 1);
 		myai2 = new AI(this, 3);
