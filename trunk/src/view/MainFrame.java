@@ -149,7 +149,7 @@ public class MainFrame extends JFrame implements MainFrameListener {
 			if (showCard == true)
 				player2Panel.add(new CardPanel(card.getRank(),card.getSuit()),c);
 			else
-				player2Panel.add(new CardPanel(0,"empty"),c);
+				player2Panel.add(new CardPanel(),c);
 			c.gridx++;
 		}
 		JLabel money = new JLabel("money :" + modelManager.getPlayer2().getMoney());

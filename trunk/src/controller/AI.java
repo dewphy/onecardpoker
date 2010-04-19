@@ -152,7 +152,7 @@ public class AI {
 	 }
 	 
 	 public void initNN(NN nn) throws FileNotFoundException {
-		String filename = "results.txt";
+		String filename = "games.csv";
 		int nParties = 100;
 		
 		double[][] inputs = new double[nParties][2];
@@ -183,7 +183,7 @@ public class AI {
 	
 	public void initNN3(NN nn)throws FileNotFoundException {
 		int nNeurones = 10;
-		String filename = "results.txt";
+		String filename = "games.csv";
 		int nParties = 200;
 		
 		Scanner scan = new Scanner(new File(filename));

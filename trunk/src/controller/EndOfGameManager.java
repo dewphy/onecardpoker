@@ -9,7 +9,7 @@ public class EndOfGameManager implements EndGame {
 	private ControllerManager controllerManager;
 	public EndOfGameManager(ControllerManager controllerManager) {
 		this.controllerManager = controllerManager;
-		this.controllerManager.getModelManager().addEndGame(this);
+		controllerManager.getModelManager().addEndGame(this);
 	}
 	
 	public void determineWinner() {
