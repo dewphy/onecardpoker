@@ -21,4 +21,8 @@ public class Flop {
 	public int getNbCards() {
 		return nbCards;
 	}
+	
+	public boolean isEmpty() {
+		return nbCards > 0;
+	}
 }
