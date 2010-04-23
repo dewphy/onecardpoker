@@ -97,9 +97,9 @@ public class NN {
 	public void test(double[][] inputs, double[][] targets) {
 		for (int i=0; i<inputs.length; i++) {
 			double[] outputs = update(inputs[i]);
-			this.printVector(inputs[i], " Inputs");
-			this.printVector(targets[i], "Targets");
-			this.printVector(outputs, "Outputs");
+			//this.printVector(inputs[i], " Inputs");
+			//this.printVector(targets[i], "Targets");
+			//this.printVector(outputs, "Outputs");
 		}
 	}
 	 
