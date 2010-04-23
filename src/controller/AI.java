@@ -11,23 +11,23 @@ import model.Player;
 public class AI {
 	
 	private ControllerManager controllerManager;
-	private int Strategy;
+	private int strategy;
 	private NN  nn;
 	private NN  nn2;
 	private NN  nn3;
 	
-	public AI(ControllerManager controllerManager, int Strategy) {
+	public AI(ControllerManager controllerManager, int strategy) {
 		this.controllerManager = controllerManager;
-		this.Strategy = Strategy;
+		this.strategy = strategy;
 		
-		if (Strategy == 3 || Strategy == 4) {
+		if (strategy == 3 || strategy == 4) {
 			nn = new NN(2,10,1); 
-			
-			// nn2 = 
+			nn2 = new NN(3, 15, 1);
 			nn3 = new NN(2, 10, 1);
 			
 			try {
 				initNN(nn);
+				initNN2(nn2);
 				initNN3(nn3);
 			} catch(Exception e) {
 				System.out.println(e);
@@ -36,15 +36,15 @@ public class AI {
 	}
 	
 	public void play() {
-		if (this.Strategy==1) {
+		if (strategy==1) {
 			aialwaisraise();
-		} else if (Strategy==0) {
+		} else if (strategy==0) {
 			iarandom();
-		} else if (Strategy==2) {
+		} else if (strategy==2) {
 			decreaseproba();
-		} else if (Strategy==3) {
+		} else if (strategy==3) {
 			NNbasic();
-		} else if (Strategy==5) {
+		} else if (strategy==5) {
 			alwaysfall();
 		}
 	}
@@ -87,7 +87,7 @@ public class AI {
 	
 	public void NNbasic() {
 		ModelManager modelManager = controllerManager.getModelManager();
-		if (modelManager.getTurnNumber()!=2) {
+		if (modelManager.getTurnNumber() != 2) {
 			Player player = modelManager.getPlayer(modelManager.getTurnOfPlayer());
 			double card = player.getCard(0).getRank();
 			
@@ -127,8 +127,8 @@ public class AI {
 			} else if (payoff[1] < -1) {
 				payoff[1] = -1;
 			}
-			proba[0] = 1+ payoff[0];
-			proba[1] = 1+ payoff[1];
+			proba[0] = 1 + payoff[0];
+			proba[1] = 1 + payoff[1];
 			
 			double tot = (proba[0])+(proba[1]);
 			double rand = Math.random()*tot;
@@ -137,21 +137,68 @@ public class AI {
 				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),0);
 			} else {
 				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),1);
-//				if (payoff[0]>payoff[1]) {
-//					System.out.println(" With card " + card + " bet: 0" + " (payoff $0: " + payoff[0] + ", payoff $1: " + payoff[1] + ")");
-//					modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),0);
-//				} else {
-//					System.out.println(" With card " + card + " bet: 1" + " (payoff $1: " + payoff[1] + ", payoff $0: " + payoff[0] + ")");
-//					modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),1);
-//				}
 			}
 		} else {
-			iarandom();
+			NN2basic();
 		}
 		modelManager.changeTurn();
-	 }
-	 
-	 public void initNN(NN nn) throws FileNotFoundException {
+	}
+	
+	public void NN2basic() {
+		ModelManager modelManager = controllerManager.getModelManager();
+		Player player = modelManager.getPlayer(modelManager.getTurnOfPlayer());
+		Player opponent;
+		
+		if (modelManager.getTurnOfPlayer() == 1) {
+			opponent = modelManager.getPlayer2();
+		} else {
+			opponent = modelManager.getPlayer1();
+		}
+		
+		double card = player.getCard(0).getRank();
+		
+		double prob = 0.0;
+		double[] input = new double[3];
+		double[] payoff = new double[2];
+		
+		input[0] = card;
+		input[1] = opponent.getBet();
+		
+		// Bets 0$.
+		input[2] = 0.0;
+		payoff[0] = nn.update(input)[0];
+		
+		// Bets 1$.
+		input[2] = 1.0;
+		payoff[1] = nn.update(input)[0];
+		
+		System.out.println("--- If opponent bets 0$ ---");
+		if (input[1] == 0) {
+			if (payoff[0]>payoff[1]) {
+				System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
+				System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
+				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),0);
+			}
+			else {
+				System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
+				System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
+				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),1);
+			}
+		} else {
+			if (payoff[0]>payoff[1]) {
+				System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
+				System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
+				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),0);
+			}
+			else {
+				System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
+				System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
+				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),1);
+			}
+		}
+	}
+	
+	public void initNN(NN nn) throws FileNotFoundException {
 		String filename = "games.csv";
 		int nParties = 100;
 		
@@ -181,7 +228,7 @@ public class AI {
 		// nn.test(inputs, targets);
 	}
 	
-	public void initNN3(NN nn)throws FileNotFoundException {
+	public void initNN3(NN nn) throws FileNotFoundException {
 		int nNeurones = 10;
 		String filename = "games.csv";
 		int nParties = 200;
@@ -213,5 +260,50 @@ public class AI {
 		}
 		nn.train(inputs, targets, 100, 0.01, 0.1);
 		nn.test(inputs, targets);
-	} 	
+	}
+	
+	public void initNN2(NN nn) throws FileNotFoundException {
+		String filename = "games.csv";
+		int nParties = 200;
+		
+		Scanner scan = new Scanner(new File(filename));
+		
+		double[][] inputs = new double[nParties][3];
+		double[][] targets = new double[nParties][1];
+		
+		for (int i=0; scan.hasNext() && i<nParties; i++) {
+			double carteJoueur1 = scan.nextDouble();
+			double carteJoueur2 = scan.nextDouble();
+			double mise1Joueur1 = scan.nextDouble();
+			double mise1Joueur2 = scan.nextDouble();
+			double mise2Joueur1 = scan.nextDouble();
+			double joueurGagnant = scan.nextDouble();
+			double gain = scan.nextDouble();
+			
+			// valeur carte joueur 1
+			inputs[i][0] = (carteJoueur2-1.0)/12.0;
+			
+			// action prise
+			inputs[i][1] = mise1Joueur1;
+			inputs[i][2] = mise1Joueur2;
+			
+			// gain qu'il a eu
+			if (joueurGagnant == 2)
+				targets[i][0] = gain/2.0;				// gain qu'il a eu
+			else
+				targets[i][0] = -1.0*(gain/2.0);
+		}
+		nn.train(inputs, targets, 10000, 0.01, 0.1);
+		nn.test(inputs, targets);
+	}
+	
+	/**
+	 * Returns a probability between 0.0 and 1.0 depending on the payoffs
+	 * @param x	the delta between the payoffs
+	 * @return the probability
+	 */
+	public static double fProba(double x) {
+		double lambda = 5;
+		return 1.0/(1+Math.exp(-1.0*x*lambda));
+	}
 }
