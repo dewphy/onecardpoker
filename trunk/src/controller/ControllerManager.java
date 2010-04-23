@@ -1,5 +1,7 @@
 package controller;
 
+import javax.swing.JOptionPane;
+
 import model.ModelManager;
 
 public class ControllerManager implements AITurn {
@@ -13,8 +15,8 @@ public class ControllerManager implements AITurn {
 	public ControllerManager(ModelManager modelManager){
 		this.modelManager = modelManager;
 		
-		myai1 = new AI(this, 1);
-		myai2 = new AI(this, 3);
+		myai1 = new AI(this, 2);
+		myai2 = new AI(this, 4);
 		
 		endOfGameManager = new EndOfGameManager(this);
 		getModelManager().addAITurn(this);
@@ -24,13 +26,33 @@ public class ControllerManager implements AITurn {
 	}
 	
 	public void testAI() {
-		for(int i=0; i<10000000; i++) {
+		
+		for(int i=0; i<1000000000; i++) {
 			if (modelManager.getTurnOfPlayer() == 1) {
 				myai1.play();
 			} else {
 				myai2.play();
 			}
+			
+			if(this.modelManager.getTurnNumber()==1)
+				;//this.ailearning();
 		}
+	}
+	
+	public void ailearning()
+	{
+		double[][] inputs = this.modelManager.getinputs();
+		double[][] targets = this.modelManager.gettargets();
+		if(this.modelManager.getendturnnumber()==2 && this.modelManager.getlastplayernumber()==2)
+		{
+			myai2.getnn(2).train(inputs, targets, 100, 0.01, 0.1);
+		}
+		else if(this.modelManager.getendturnnumber()==3)
+		{
+			myai2.getnn(3).train(inputs, targets, 100, 0.01, 0.1);
+		}
+		else
+			myai2.getnn(1).train(inputs, targets, 100, 0.5, 0.1);
 	}
 	
 	public ModelManager getModelManager() {

@@ -77,7 +77,7 @@ public class MainFrame extends JFrame implements MainFrameListener {
 	public void init2() {
 		initFlop();
 		initPlayer1();
-		initPlayer2(false);
+		initPlayer2(true);
 	}
 	
 	public void initFlop() {
@@ -229,21 +229,22 @@ public class MainFrame extends JFrame implements MainFrameListener {
 	
 	public void startNewGame() {
 		init1();
-		if (modelManager.getTurnOfPlayer() == 1)
-			reaction();
-		else
+		//if (modelManager.getTurnOfPlayer() == 1) /////////////////////// ia vs ia
+		//	reaction();
+		//else
 			modelManager.fireAITurnRequest();
 	}
 	
 	public void showcard(int winner,int value) {
-		init1();
-		initPlayer2(true);
+		
 		if (winner == 1)
 			JOptionPane.showMessageDialog(null,"player 1 won "+value/2+" $" ,"End",JOptionPane.INFORMATION_MESSAGE) ;
 		else if (winner == 2)
 			JOptionPane.showMessageDialog(null,"player 1 lost "+value/2+" $","End",JOptionPane.INFORMATION_MESSAGE) ;
 		else
 			JOptionPane.showMessageDialog(null,"equality","End",JOptionPane.INFORMATION_MESSAGE) ;
+		init1();
+		initPlayer2(true);
 	}
 	
 	public void end() {

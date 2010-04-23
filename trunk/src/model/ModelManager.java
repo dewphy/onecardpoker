@@ -29,10 +29,34 @@ public class ModelManager {
 	/// for AI test
 	private int nbVictories1 = 0;
 	private int nbVictories2 = 0;
-	private boolean AITest = false;
+	private boolean AITest = true;
+	private double[][] inputs;
+	private double[][] targets;
+	private int endturnnumber;
+	private int lastplayernumber;
 	
 	public boolean getAITest() {
 		return AITest;
+	}
+	
+	public double [][]getinputs()
+	{
+		return this.inputs;
+	}
+	
+	public int getendturnnumber()
+	{
+		return this.endturnnumber;
+	}
+	
+	public int getlastplayernumber()
+	{
+		return this.lastplayernumber;
+	}
+	
+	public double[][]gettargets()
+	{
+		return this.targets;
 	}
 	
 	public void AIStat() {
@@ -46,6 +70,32 @@ public class ModelManager {
 			nbVictories2 = 0;
 			nbVictories1 = 0;
 		}
+	}
+	
+	public void AIlearn(int player1value,int player2value)
+	{
+		//System.out.println (this.turnNumber);
+		this.endturnnumber = this.turnNumber;
+		this.lastplayernumber = this.turnOfPlayer;
+		if(turnNumber==2 && this.turnOfPlayer==2)
+		{
+			inputs = new double[1][3];
+			inputs[0][1] = this.player1.getBet()-1;
+			inputs[0][2] = this.player2.getBet()-1;
+			//System.out.println(inputs[0][1]);
+			//System.out.println(inputs[0][2]);
+		}
+		else
+		{
+			inputs = new double[1][2];
+			inputs[0][1] = this.player2.getBet()-1;
+			//System.out.println(inputs[0][1]);
+		}
+		//System.out.println("/////");
+		targets = new double[1][1];
+		targets[0][0] = (player2value-(double)this.player2.getBet())/2;
+		inputs[0][0] = (this.player2.getCard(0).getRank()-2)/12;
+		//System.out.println(targets[0][0]);
 	}
 	
 	public ModelManager() {
@@ -111,6 +161,8 @@ public class ModelManager {
 	public void payoff(int player1value,int player2value) {
 		pot = 0;
 		
+		AIlearn(player1value,player2value);
+		
 		player1.setBet(0);
 		player2.setBet(0);
 		
@@ -167,8 +219,8 @@ public class ModelManager {
 			fireAITurnRequest();
 		} else if(turnOfPlayer == 1)
 		{
-			//this.fireAITurnRequest();
-			this.firePlayerTurnRequest();/////////////////////// ia vs ia
+			this.fireAITurnRequest();
+			//this.firePlayerTurnRequest();/////////////////////// ia vs ia
 		}
 	}
 	

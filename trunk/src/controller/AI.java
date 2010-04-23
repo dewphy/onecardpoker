@@ -42,7 +42,7 @@ public class AI {
 			iarandom();
 		} else if (strategy==2) {
 			decreaseproba();
-		} else if (strategy==3) {
+		} else if (strategy == 3 || strategy == 4){
 			NNbasic();
 		} else if (strategy==5) {
 			alwaysfall();
@@ -127,8 +127,28 @@ public class AI {
 			} else if (payoff[1] < -1) {
 				payoff[1] = -1;
 			}
-			proba[0] = 1 + payoff[0];
-			proba[1] = 1 + payoff[1];
+			
+			if(this.strategy==3)
+			{
+				proba[0] = 1 + payoff[0];
+				proba[1] = 1 + payoff[1];
+			}
+			else if(this.strategy==4)
+			{
+				
+				if (payoff[0]>payoff[1]) {
+					//System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
+					//System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
+					proba[0] = fProba(payoff[0]-payoff[1]);
+					proba[1] = 1-proba[0];
+				}
+				else {
+					//System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
+					//System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
+					proba[1] = fProba(payoff[1]-payoff[0]);
+					proba[0] = 1-proba[1];
+				}
+			}
 			
 			double tot = (proba[0])+(proba[1]);
 			double rand = Math.random()*tot;
@@ -148,7 +168,6 @@ public class AI {
 		ModelManager modelManager = controllerManager.getModelManager();
 		Player player = modelManager.getPlayer(modelManager.getTurnOfPlayer());
 		Player opponent;
-		
 		if (modelManager.getTurnOfPlayer() == 1) {
 			opponent = modelManager.getPlayer2();
 		} else {
@@ -160,42 +179,71 @@ public class AI {
 		double prob = 0.0;
 		double[] input = new double[3];
 		double[] payoff = new double[2];
+		double[] proba = new double[2];
 		
-		input[0] = card;
+		input[0] = (card-2)/12;
 		input[1] = opponent.getBet();
 		
 		// Bets 0$.
 		input[2] = 0.0;
-		payoff[0] = nn.update(input)[0];
+		payoff[0] = nn2.update(input)[0];
 		
 		// Bets 1$.
 		input[2] = 1.0;
-		payoff[1] = nn.update(input)[0];
+		payoff[1] = nn2.update(input)[0];
 		
-		System.out.println("--- If opponent bets 0$ ---");
-		if (input[1] == 0) {
-			if (payoff[0]>payoff[1]) {
-				System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
-				System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
-				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),0);
-			}
-			else {
-				System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
-				System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
-				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),1);
-			}
-		} else {
-			if (payoff[0]>payoff[1]) {
-				System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
-				System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
-				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),0);
-			}
-			else {
-				System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
-				System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
-				modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),1);
-			}
+		if(this.strategy==3)
+		{
+			proba[0] = 1 + payoff[0];
+			proba[1] = 1 + payoff[1];
 		}
+		else if(this.strategy==4)
+		{
+			
+			if (payoff[0]>payoff[1]) {
+				//System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
+				//System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
+				proba[0] = fProba(payoff[0]-payoff[1]);
+				proba[1] = 1-proba[0];
+			}
+			else {
+				//System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
+				//System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
+				proba[1] = fProba(payoff[1]-payoff[0]);
+				proba[0] = 1-proba[1];
+			}
+			
+			/*System.out.println("--- If opponent bets 0$ ---");
+			if (input[1] == 0) {
+				if (payoff[0]>payoff[1]) {
+					System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
+					System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
+				}
+				else {
+					System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
+					System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
+				}
+			} else {
+				if (payoff[0]>payoff[1]) {
+					System.out.println(" => with card " + card + " bet: 0" + " payoff $0: " + payoff[0] + " payoff $1: " + payoff[1]);
+					System.out.println(" => prob to bet 0 : "+fProba(payoff[0]-payoff[1]));
+				}
+				else {
+					System.out.println(" => with card " + card + " bet: 1" + " payoff $1: " + payoff[1] + " payoff $0: " + payoff[0]);
+					System.out.println(" => prob to bet 1 : "+fProba(payoff[1]-payoff[0]));
+				}
+			}*/
+		}
+		
+		double tot = (proba[0])+(proba[1]);
+		double rand = Math.random()*tot;
+		
+		if(rand<proba[0]) {
+			modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),0);
+		} else {
+			modelManager.increaseBet(modelManager.getPlayer(modelManager.getTurnOfPlayer()),1);
+		}
+		
 	}
 	
 	public void initNN(NN nn) throws FileNotFoundException {
@@ -231,7 +279,7 @@ public class AI {
 	public void initNN3(NN nn) throws FileNotFoundException {
 		int nNeurones = 10;
 		String filename = "games.csv";
-		int nParties = 200;
+		int nParties = 100;
 		
 		Scanner scan = new Scanner(new File(filename));
 		
@@ -264,7 +312,7 @@ public class AI {
 	
 	public void initNN2(NN nn) throws FileNotFoundException {
 		String filename = "games.csv";
-		int nParties = 200;
+		int nParties = 100;
 		
 		Scanner scan = new Scanner(new File(filename));
 		
@@ -293,7 +341,7 @@ public class AI {
 			else
 				targets[i][0] = -1.0*(gain/2.0);
 		}
-		nn.train(inputs, targets, 10000, 0.01, 0.1);
+		nn.train(inputs, targets, 100, 0.01, 0.1);
 		nn.test(inputs, targets);
 	}
 	
@@ -305,5 +353,17 @@ public class AI {
 	public static double fProba(double x) {
 		double lambda = 5;
 		return 1.0/(1+Math.exp(-1.0*x*lambda));
+	}
+	
+	public NN getnn(int number)
+	{
+		if(number == 1)
+			return this.nn;
+		else if(number==2)
+			return this.nn2;
+		else if(number==3)
+			return this.nn3;
+		
+		return null;
 	}
 }
