@@ -38,7 +38,7 @@ public class MainFrame extends JFrame implements MainFrameListener {
 		
 		panel.setLayout(new GridBagLayout());
 		player1Panel.setLayout(new GridBagLayout());
-		player1Panel.setLayout(new GridBagLayout());
+		player2Panel.setLayout(new GridBagLayout());
 		
 		flopPanel = new JPanel();
 		flopPanel.setLayout(new GridBagLayout());
@@ -57,20 +57,20 @@ public class MainFrame extends JFrame implements MainFrameListener {
 	}
 	
 	public void init1() {
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.insets = new Insets(5,5,5,5);
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.gridy++;
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(5,5,5,5);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.CENTER;
+		c.gridy++;
 		
 		init2();
-		panel.add(flopPanel, constraints);
-		constraints.gridy++;
-		panel.add(player1Panel, constraints);
-		constraints.gridx++;
-		panel.add(player2Panel, constraints);
+		panel.add(flopPanel, c);
+		c.gridy++;
+		panel.add(player1Panel, c);
+		c.gridx++;
+		panel.add(player2Panel, c);
 		pack();
 	}
 	
@@ -80,28 +80,27 @@ public class MainFrame extends JFrame implements MainFrameListener {
 		initPlayer2(false);
 	}
 	
-	public void initFlop()
-	{
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.insets = new Insets(5,5,5,5);
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.anchor = GridBagConstraints.CENTER;
+	public void initFlop() {
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(5,5,5,5);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.CENTER;
 		Flop flop = modelManager.getFlop();
 		flopPanel.removeAll();
 		for (int i=0; i<flop.getNbCards(); i++) {
 			Card card = flop.getCard(i);
-			flopPanel.add(new CardPanel(card.getRank(),card.getSuit()),constraints);
-			constraints.gridx++;
+			flopPanel.add(new CardPanel(card.getRank(),card.getSuit()),c);
+			c.gridx++;
 		}
 		JLabel totalbet = new JLabel("total bet :" + modelManager.getPot());
-		constraints.gridy++;
-		constraints.gridx = 0;
-		flopPanel.add(totalbet,constraints);	
+		c.gridy++;
+		c.gridx = 0;
+		flopPanel.add(totalbet,c);	
 		JLabel turnumber = new JLabel("turn :"+this.modelManager.getTurnNumber());
-		constraints.gridx++;
-		flopPanel.add(turnumber,constraints);	
+		c.gridx++;
+		flopPanel.add(turnumber,c);	
 		pack();
 		flopPanel.updateUI();
 	}
