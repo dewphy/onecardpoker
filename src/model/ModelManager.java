@@ -65,7 +65,7 @@ public class ModelManager {
 		else
 			nbVictories1++;
 		
-		if (nbVictories2+nbVictories1 >= 1000) {
+		if (nbVictories2+nbVictories1 >= 1) {
 			JOptionPane.showMessageDialog(null,"player 1: "+nbVictories1+"\nplayer 2: "+nbVictories2,"End",JOptionPane.INFORMATION_MESSAGE);
 			nbVictories2 = 0;
 			nbVictories1 = 0;
